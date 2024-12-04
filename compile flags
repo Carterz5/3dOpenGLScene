@@ -1,0 +1,7 @@
+gcc main.c -lGL -lGLU -lX11
+
+gcc test.c -lglfw -lGL -lGLU -lX11
+
+gcc main.c renderer.c indexbuffer.c vertexbufferlayout.c vertexbuffer.c vertexarray.c shader.c -lGLEW -lglfw -lGL -lGLU -lX11
+
+gcc main.c indexbuffer.c vertexbuffer.c vertexbufferlayout.c renderer.c -lGLEW -lglfw -lGL -lGLU -lX11
