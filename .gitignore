@@ -1,0 +1,4 @@
+*.out
+compile flags
+*.vscode
+*.o
