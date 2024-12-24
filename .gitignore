@@ -2,3 +2,4 @@
 compile flags
 *.vscode
 *.o
+a.out

@@ -16,63 +16,28 @@
 #include "cglm/cglm.h"
 #include "cglm/mat4.h"
 
-
-
-#define NK_INCLUDE_FIXED_TYPES
-#define NK_INCLUDE_STANDARD_IO
-#define NK_INCLUDE_STANDARD_VARARGS
-#define NK_INCLUDE_DEFAULT_ALLOCATOR
-#define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
-#define NK_INCLUDE_FONT_BAKING
-#define NK_INCLUDE_DEFAULT_FONT
-#define NK_IMPLEMENTATION
-#define NK_GLFW_GL3_IMPLEMENTATION
-#define NK_KEYSTATE_BASED_INPUT
-#include "nuklear.h"
-#include "nuklear_glfw_gl3.h"
+//void process_input(GLFWwindow* window, mat4 proj, mat4 view, mat4 model, vec3 viewtranslation);
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 #define MAX_VERTEX_BUFFER 512 * 1024
 #define MAX_ELEMENT_BUFFER 128 * 1024
 
+typedef struct Inputs {
+    int Wstate;
+    int Astate;
+    int Sstate;
+    int Dstate;
+    int CTRLState;
+    int SPACEState;
+} Inputs;
 
-
-
-void printVertex(const Vertex* v) {
-    printf("Position: [%.2f, %.2f, %.2f]\n", v->Position[0], v->Position[1], v->Position[2]);
-    printf("Color: [%.2f, %.2f, %.2f, %.2f]\n", v->Color[0], v->Color[1], v->Color[2], v->Color[3]);
-    printf("TexCoords: [%.2f, %.2f]\n", v->TexCoords[0], v->TexCoords[1]);
-    printf("TexID: %.2f\n", v->TexID);
-}
-
-void printQuad(const Quad* quad) {
-    printf("Vertex 0:\n");
-    printVertex(&quad->v0);
-    printf("\n");
-
-    printf("Vertex 1:\n");
-    printVertex(&quad->v1);
-    printf("\n");
-
-    printf("Vertex 2:\n");
-    printVertex(&quad->v2);
-    printf("\n");
-
-    printf("Vertex 3:\n");
-    printVertex(&quad->v3);
-    printf("\n");
-}
-
-
-
-
+Inputs callback_keys;
 
 
 int main(void){
 
-    struct nk_glfw glfw = {0};
+
     int width = 0, height = 0;
-    struct nk_context *ctx;
-    struct nk_colorf bg;
     GLFWwindow* window;
 
     /* Initialize the library */
@@ -104,126 +69,121 @@ int main(void){
     GLCall(const unsigned char *glversion = glGetString(GL_VERSION));
     printf("GL version is |%s|\n", glversion);
 
-    ctx = nk_glfw3_init(&glfw, window, NK_GLFW3_INSTALL_CALLBACKS);
-    {struct nk_font_atlas *atlas;
-    nk_glfw3_font_stash_begin(&glfw, &atlas);
-    nk_glfw3_font_stash_end(&glfw);
-    }
-    bg.r = 0.10f, bg.g = 0.18f, bg.b = 0.24f, bg.a = 1.0f;
+    glfwSetKeyCallback(window, key_callback);
+    float bgr = 0.10f, bgg = 0.18f, bgb = 0.24f, bga = 1.0f;
 
 
-    float positions[] = {
-        -50.0f,  -50.0f, 0.0f, 0.0f, // 0
-         50.0f,  -50.0f, 1.0f, 0.0f, // 1
-         50.0f,   50.0f, 1.0f, 1.0f, // 2
-        -50.0f,   50.0f, 0.0f, 1.0f, // 3
+    float positions[] =
+    { //     COORDINATES     /   TexCoord  //
+        -0.5f, 0.0f,  0.5f, 	0.0f, 0.0f,
+        -0.5f, 0.0f, -0.5f, 	5.0f, 0.0f,
+         0.5f, 0.0f, -0.5f, 	0.0f, 0.0f,
+         0.5f, 0.0f,  0.5f, 	5.0f, 0.0f,
+         0.0f, 0.8f,  0.0f, 	2.5f, 5.0f
     };
 
     unsigned int indices[] = {
         0, 1, 2,
-        2, 3, 0
+        0, 2, 3,
+        0, 1, 4,
+        1, 2, 4,
+        2, 3, 4,
+        3, 0, 4
+    };
+
+    float positions2[] =
+    { //     COORDINATES     /   TexCoord  //
+        -2.0f, -0.1f,  0.5f, 	0.0f, 0.0f,
+        -1.0f, -0.1f,  0.5f, 	5.0f, 0.0f,
+        -1.0f,  0.1f,  0.5f, 	0.0f, 0.0f,
+        -2.0f,  0.1f,  0.5f, 	5.0f, 0.0f,
+        -2.0f, -0.1f, -2.0f, 	0.0f, 0.0f,
+        -1.0f, -0.1f, -2.0f, 	5.0f, 0.0f,
+        -1.0f,  0.1f, -2.0f, 	0.0f, 0.0f,
+        -2.0f,  0.1f, -2.0f, 	5.0f, 0.0f
 
     };
 
-    unsigned int BatchIndices[12];
-    IB_Populate(2, BatchIndices, 12);
+    unsigned int indices2[] = {
+        // Front face
+        0, 1, 2,
+        2, 3, 0,
+
+        // Back face
+        4, 5, 6,
+        6, 7, 4,
+
+        // Left face
+        0, 4, 7,
+        7, 3, 0,
+
+        // Right face
+        1, 5, 6,
+        6, 2, 1,
+
+        // Top face
+        3, 2, 6,
+        6, 7, 3,
+
+        // Bottom face
+        0, 1, 5,
+        5, 4, 0
+    };
+
+
 
     GLCall(glEnable(GL_BLEND));
     GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
-    // BATCHING
-    VertexArray vabatch;
-    VA_Construct(&vabatch);
 
-    VertexBuffer vbbatch;
-    VB_Construct_Batch(sizeof(Vertex) * 8, &vbbatch);
-    //Quad boxes[2];
-    Quad box1;
-    Quad box2;
-
-
-    R_CreateQuad(&box1, -0.5f, -0.5f, 1.0f, 0.5f, 0.0f, 0.0f, 1.0f, 0.5f);
-    R_CreateQuad(&box2, 0.5f, 0.5f, 2.0f, 0.5f, 0.0f, 0.0f, 1.0f, 0.5f);
-    printQuad(&box1);
-
-    VB_AddToBatch(&vbbatch, sizeof(Quad), &box1);
-    VB_AddToBatch(&vbbatch, sizeof(Quad), &box2);
-
-    VertexBufferLayout vblbatch;
-    VBL_Construct(&vblbatch);
-    VBL_Pushfloat(3, &vblbatch);
-    VBL_Pushfloat(4, &vblbatch);
-    VBL_Pushfloat(2, &vblbatch);
-    VBL_Pushfloat(1, &vblbatch);
-    VA_AddBuffer(&vbbatch, &vblbatch, &vabatch);
-    
-    IndexBuffer ibbatch;
-    
-    IB_Construct(BatchIndices, 12, &ibbatch);
-
-
-    Shader batchshader;
-    SH_Construct(&batchshader,"../res/shaders/Batch.glsl");
-    SH_Bind(&batchshader);
-
-
-    
-
-    Texture Wtexture;
-    Texture Ctexture;
-    TX_Construct("../res/textures/W.png", &Wtexture);
-    TX_Construct("../res/textures/C.png", &Ctexture);
-    TX_Bind(2, &Wtexture);
-    TX_Bind(1, &Ctexture);
-    //int samplers[32] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31};
-    int samplers[3] = {0, 1, 2};
-    SH_SetUniform1iv(&batchshader, "u_Textures", 3, samplers);
-
-
-    
-
-    // OLD NON BATCH DRAWING
     VertexArray va;
     VA_Construct(&va);
+    VertexArray va2;
+    VA_Construct(&va2);
 
     
     VertexBuffer vb;
-    VB_Construct(positions, 4 * 4 * sizeof(float), &vb);
+    VB_Construct(positions, 5 * 5 * sizeof(float), &vb);
+    VertexBuffer vb2;
+    VB_Construct(positions2, 5 * 8 * sizeof(float), &vb2);
     
     VertexBufferLayout vbl;
     VBL_Construct(&vbl);
+    VBL_Pushfloat(3, &vbl);
     VBL_Pushfloat(2, &vbl);
-    VBL_Pushfloat(2, &vbl);
+    VertexBufferLayout vbl2;
+    VBL_Construct(&vbl2);
+    VBL_Pushfloat(3, &vbl2);
+    VBL_Pushfloat(2, &vbl2);
     
     VA_AddBuffer(&vb, &vbl, &va);
+    VA_AddBuffer(&vb2, &vbl2, &va2);
   
 
     IndexBuffer ib;
-    IB_Construct(indices, 6, &ib);
+    IB_Construct(indices, 18, &ib);
+    IndexBuffer ib2;
+    IB_Construct(indices2, 36, &ib2);
 
 
     mat4 proj;
-    glm_ortho(0.0f, 1024.0f, 0.0f, 768.0f, -1.0f, 1.0f, proj);
+    glm_perspective(45.0f, (float)width / height, 0.1f, 100.0f, proj);
 
     mat4 view;
     glm_mat4_identity(view);
-    vec3 viewtranslation = { 0.0f, 0.0f, 0.0f};
+    vec3 viewtranslation = { 0.0f, -0.5f, -2.0f};
     glm_translate(view, viewtranslation);
 
 
     mat4 model;
     glm_mat4_identity(model);
-    vec3 modeltranslationA = {0.0f, 0.0f, 0.0f};
-    vec3 modeltranslationB = {400.0f, 200.0f, 0.0f};
-    glm_translate(model, modeltranslationA);
+    mat4 model2;
+    glm_mat4_identity(model2);
+    vec3 rotationaxis = {0.0f, 1.0f, 0.0f};
 
-
-    float modelxA = 200.0f;
-    float modelyA = 200.0f;
-    float modelxB = 400.0f;
-    float modelyB = 200.0f;
 
     mat4 mvp;
+    mat4 mvp2;
     mat4 temp;
     glm_mat4_mul(proj, view, temp);
     glm_mat4_mul(temp, model, mvp);
@@ -237,125 +197,115 @@ int main(void){
     
 
     Texture texture;
-    TX_Construct("../res/textures/C.png", &texture);
+    TX_Construct("../res/textures/brick.png", &texture);
     TX_Bind(0, &texture);
     SH_SetUniform1i(&shader, "u_Texture", 0);
 
+
+    float rotation = 0.0f;
+
+    GLCall(glEnable(GL_DEPTH_TEST));
 
     VA_Unbind();
     SH_Unbind();
     VB_Unbind();
     IB_Unbind();
     GLCall(glfwSwapInterval(1));
-    clock_t current_ticks, delta_ticks;
-    clock_t fps = 0;
-    unsigned int loop_ticks = 0;
     double lasttime = glfwGetTime();
+    const double PHYSICS_TIME_STEP = 1.0 / 60.0;
+    double previousTime = glfwGetTime();
+    double accumulator = 0.0;
+    const int FPS_SAMPLES = 100;
+    double fpsSum = 0.0;
+    int fpsCount = 0;
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
         /* Render here */
-        current_ticks = clock();
+        GLCall(glClearColor(bgr,bgg,bgb,bga));
+        GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT))
+
         //Different way to limit framerate than Cherno. glfwSwapInterval was not working on virtual machine.
         while (glfwGetTime() < lasttime + 1.0/TARGET_FPS) {
 
         };
         lasttime += 1.0/TARGET_FPS;
 
-        glfwPollEvents();
+
+        double currentTime = glfwGetTime();
+        double frameTime = currentTime - previousTime;
+        previousTime = currentTime;
 
 
-        //Nuklear GUI
-        nk_glfw3_new_frame(&glfw);
-
-        /* GUI */
-        if (nk_begin(ctx, "Demo", nk_rect(50, 50, 230, 300),
-            NK_WINDOW_BORDER|NK_WINDOW_MOVABLE|NK_WINDOW_SCALABLE|
-            NK_WINDOW_MINIMIZABLE|NK_WINDOW_TITLE))
-        {
-
-            nk_layout_row_dynamic(ctx, 20, 1);
-            nk_label(ctx, "A X axis", NK_TEXT_LEFT);
-            nk_layout_row_dynamic(ctx, 25, 1);
-            nk_slider_float(ctx, 1.0f, &modelxA, 1024.0f, 1.0f);
-            nk_layout_row_dynamic(ctx, 20, 1);
-            nk_label(ctx, "A Y axis", NK_TEXT_LEFT);
-            nk_layout_row_dynamic(ctx, 25, 1);
-            nk_slider_float(ctx, 1.0f, &modelyA, 768.0f, 1.0f);
-            nk_layout_row_dynamic(ctx, 20, 1);
-            nk_label(ctx, "B X axis", NK_TEXT_LEFT);
-            nk_layout_row_dynamic(ctx, 25, 1);
-            nk_slider_float(ctx, 1.0f, &modelxB, 1024.0f, 1.0f);
-            nk_layout_row_dynamic(ctx, 20, 1);
-            nk_label(ctx, "B Y axis", NK_TEXT_LEFT);
-            nk_layout_row_dynamic(ctx, 25, 1);
-            nk_slider_float(ctx, 1.0f, &modelyB, 768.0f, 1.0f);
-            nk_layout_row_dynamic(ctx, 25, 1);
-            nk_labelf(ctx, NK_TEXT_LEFT, "FPS: %ld", fps);
-
+        if (frameTime > 0.25) {
+            frameTime = 0.25;
         }
-        nk_end(ctx);
-        R_Clear();
-        glClearColor(bg.r, bg.g, bg.b, bg.a);
+
+        accumulator += frameTime;
+
+        // Update FPS average
+        double currentFPS = 1.0 / frameTime;
+        fpsSum += currentFPS;
+        fpsCount++;
+
+        // Every 100 frames, output the average FPS and reset
+        if (fpsCount == FPS_SAMPLES) {
+            double averageFPS = fpsSum / FPS_SAMPLES;
+            char title[256];
+            snprintf(title, sizeof(title), "FPS: %.2f", averageFPS);
+            glfwSetWindowTitle(window, title);
+            fpsSum = 0.0;
+            fpsCount = 0;
+        }
+
+        
+
+
+        while (accumulator >= PHYSICS_TIME_STEP){
+
+            rotation += 0.01f;
+
+
+            glm_rotate(model, rotation, rotationaxis);
+
+            glm_mat4_mul(proj, view, temp);
+            glm_mat4_mul(temp, model, mvp);
+
+            //SH_SetUniformMat4f(&shader, "u_MVP", mvp);
+            glm_mat4_identity(model);
+            
+            accumulator -= PHYSICS_TIME_STEP;
+        }
+
+
+
 
         SH_Bind(&shader);
         TX_Bind(0, &texture);
-
-        modeltranslationA[0] = modelxA;
-        modeltranslationA[1] = modelyA;
-
-        modeltranslationB[0] = modelxB;
-        modeltranslationB[1] = modelyB;
-
-        glm_mat4_identity(model);
-        glm_translate(model, modeltranslationA);
-        glm_mat4_mul(temp, model, mvp);
         SH_SetUniformMat4f(&shader, "u_MVP", mvp);
-        R_Draw(&va, &ib, &shader);
+        R_Draw_IB(&va, &ib, &shader);
 
+        glm_mat4_mul(temp, model2, mvp2);
+        SH_SetUniformMat4f(&shader, "u_MVP", mvp2);
 
-        glm_mat4_identity(model);
-        glm_translate(model, modeltranslationB);
-        glm_mat4_mul(temp, model, mvp);
-        SH_SetUniformMat4f(&shader, "u_MVP", mvp);
-
-        R_Draw(&va, &ib, &shader);
-
-        SH_Bind(&batchshader);
-        TX_Bind(1, &Ctexture);
-        TX_Bind(2, &Wtexture);
-        R_Draw(&vabatch, &ibbatch, &batchshader);
+        R_Draw_IB(&va2, &ib2, &shader);
 
 
         glfwGetWindowSize(window, &width, &height);
         glViewport(0, 0, width, height);
-        /* IMPORTANT: `nk_glfw_render` modifies some global OpenGL state
-         * with blending, scissor, face culling, depth test and viewport and
-         * defaults everything back into a default state.
-         * Make sure to either a.) save and restore or b.) reset your own state after
-         * rendering the UI. */
-        nk_glfw3_render(&glfw, NK_ANTI_ALIASING_ON, MAX_VERTEX_BUFFER, MAX_ELEMENT_BUFFER);
+
 
         GLCall(glEnable(GL_BLEND));
         GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
 
-
+        processInput(window, model, view, proj);
 
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
+        glfwPollEvents();
 
-
-        delta_ticks = clock() - current_ticks; // the time it took to render the scene
-            if (loop_ticks == 20){
-                fps = CLOCKS_PER_SEC / delta_ticks;
-            };
-        loop_ticks++;
-        if(loop_ticks > 60){
-            loop_ticks = 0;
-        }
-        
     }
 
     //GLCall(glDeleteProgram(shader));
@@ -365,11 +315,176 @@ int main(void){
     VA_Destruct(&va);
     TX_Destruct(&texture);
 
-
-    nk_glfw3_shutdown(&glfw);
-
     glfwTerminate();
     return 0;
 }
 
 
+
+// void process_input(GLFWwindow* window, mat4 proj, mat4 view, mat4 model, vec3 viewtranslation){
+
+//     if(callback_keys.Wstate > GLFW_RELEASE){
+//         viewtranslation[2] += 0.1f;
+
+
+//     }
+//     if(callback_keys.Sstate > GLFW_RELEASE){
+//         viewtranslation[2] -= 0.1f;
+
+
+//     }
+//     if(callback_keys.Astate > GLFW_RELEASE){
+//         viewtranslation[0] += 0.1f;
+
+
+//     }
+//     if(callback_keys.Dstate > GLFW_RELEASE){
+//         viewtranslation[0] -= 0.1f;
+
+
+//     }
+//     if(callback_keys.SPACEState > GLFW_RELEASE){
+//         viewtranslation[1] -= 0.1f;
+
+
+//     }
+//     if(callback_keys.CTRLState > GLFW_RELEASE){
+//         viewtranslation[1] += 0.1f;
+
+
+//     }
+
+
+
+
+
+
+
+// }
+
+void processInput(GLFWwindow *window, mat4 *model, mat4 *view, mat4 *projection) {
+    static vec3 cameraPos = {0.0f, 0.0f, 3.0f};  // Initial camera position
+    static vec3 cameraFront = {0.0f, 0.0f, -1.0f}; // Camera forward direction
+    static vec3 cameraUp = {0.0f, 1.0f, 0.0f};    // Camera up direction
+
+    static float yaw = -90.0f;  // Initial yaw (pointing along -Z)
+    static float pitch = 0.0f;  // Initial pitch
+    static float lastX = 400.0f; // Last mouse X position (assume 800x600 window)
+    static float lastY = 300.0f; // Last mouse Y position
+    static int firstMouse = 1;  // To handle first mouse movement
+
+    float cameraSpeed = 0.025f;   // Adjust for movement speed
+    float mouseSensitivity = 0.2f;  // Adjust for mouse sensitivity
+
+    // Handle ESC key
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, 1);
+
+    // WASD input for movement
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        vec3 scaledFront;
+        glm_vec3_scale(cameraFront, cameraSpeed, scaledFront);
+        glm_vec3_add(cameraPos, scaledFront, cameraPos);
+    }
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+        vec3 scaledFront;
+        glm_vec3_scale(cameraFront, cameraSpeed, scaledFront);
+        glm_vec3_sub(cameraPos, scaledFront, cameraPos);
+    }
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        vec3 cameraRight;
+        glm_vec3_cross(cameraFront, cameraUp, cameraRight);
+        glm_vec3_normalize(cameraRight);
+        glm_vec3_scale(cameraRight, cameraSpeed, cameraRight);
+        glm_vec3_sub(cameraPos, cameraRight, cameraPos);
+    }
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        vec3 cameraRight;
+        glm_vec3_cross(cameraFront, cameraUp, cameraRight);
+        glm_vec3_normalize(cameraRight);
+        glm_vec3_scale(cameraRight, cameraSpeed, cameraRight);
+        glm_vec3_add(cameraPos, cameraRight, cameraPos);
+    }
+
+    // Spacebar and Left Ctrl input for vertical movement
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+        vec3 scaledUp;
+        glm_vec3_scale(cameraUp, cameraSpeed, scaledUp);
+        glm_vec3_add(cameraPos, scaledUp, cameraPos);
+    }
+    if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
+        vec3 scaledDown;
+        glm_vec3_scale(cameraUp, cameraSpeed, scaledDown);
+        glm_vec3_sub(cameraPos, scaledDown, cameraPos);
+    }
+
+    // Mouse input for camera direction
+    double xpos, ypos;
+    glfwGetCursorPos(window, &xpos, &ypos);
+
+    if (firstMouse) {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = 0;
+    }
+
+    float xOffset = xpos - lastX;
+    float yOffset = lastY - ypos;  // Reversed since Y-coordinates range bottom to top
+    lastX = xpos;
+    lastY = ypos;
+
+    xOffset *= mouseSensitivity;
+    yOffset *= mouseSensitivity;
+
+    yaw += xOffset;
+    pitch += yOffset;
+
+    // Constrain the pitch angle to prevent flipping
+    if (pitch > 89.0f)
+        pitch = 89.0f;
+    if (pitch < -89.0f)
+        pitch = -89.0f;
+
+    // Update camera front vector based on yaw and pitch
+    vec3 front;
+    front[0] = cosf(glm_rad(yaw)) * cosf(glm_rad(pitch));
+    front[1] = sinf(glm_rad(pitch));
+    front[2] = sinf(glm_rad(yaw)) * cosf(glm_rad(pitch));
+    glm_vec3_normalize(front);
+    glm_vec3_copy(front, cameraFront);
+
+    // Update the view matrix
+    glm_lookat(cameraPos, (vec3){cameraPos[0] + cameraFront[0], cameraPos[1] + cameraFront[1], cameraPos[2] + cameraFront[2]}, cameraUp, *view);
+}
+
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
+
+    
+    switch (key){
+    case GLFW_KEY_W:
+        callback_keys.Wstate = action;
+        break;
+    case GLFW_KEY_A:
+        callback_keys.Astate = action;
+        break;
+    case GLFW_KEY_S:
+        callback_keys.Sstate = action;
+        break;
+    case GLFW_KEY_D:
+        callback_keys.Dstate = action;
+        break;
+    case GLFW_KEY_SPACE:
+        callback_keys.SPACEState = action;
+        break;
+    case GLFW_KEY_LEFT_CONTROL:
+        callback_keys.CTRLState = action;
+        break;
+
+    default:
+        break;
+    }
+
+    
+
+}

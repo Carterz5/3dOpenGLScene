@@ -70,7 +70,17 @@ void R_CreateQuad(Quad* quad, float x, float y, float textureID, float r, float 
 
 }
 
-void R_Draw(VertexArray* va, IndexBuffer* ib, Shader* shader){
+void R_Draw(VertexArray* va, unsigned int count, Shader* shader){
+
+    SH_Bind(shader);
+    VA_Bind(va);
+
+    GLCall(glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, NULL));
+
+};
+
+
+void R_Draw_IB(VertexArray* va, IndexBuffer* ib, Shader* shader){
 
     SH_Bind(shader);
     VA_Bind(va);
