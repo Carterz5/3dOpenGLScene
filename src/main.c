@@ -16,22 +16,12 @@
 #include "cglm/cglm.h"
 #include "cglm/mat4.h"
 
-//void process_input(GLFWwindow* window, mat4 proj, mat4 view, mat4 model, vec3 viewtranslation);
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+
 
 #define MAX_VERTEX_BUFFER 512 * 1024
 #define MAX_ELEMENT_BUFFER 128 * 1024
 
-typedef struct Inputs {
-    int Wstate;
-    int Astate;
-    int Sstate;
-    int Dstate;
-    int CTRLState;
-    int SPACEState;
-} Inputs;
 
-Inputs callback_keys;
 
 
 int main(void){
@@ -69,7 +59,7 @@ int main(void){
     GLCall(const unsigned char *glversion = glGetString(GL_VERSION));
     printf("GL version is |%s|\n", glversion);
 
-    glfwSetKeyCallback(window, key_callback);
+
     float bgr = 0.10f, bgg = 0.18f, bgb = 0.24f, bga = 1.0f;
 
 
@@ -165,36 +155,61 @@ int main(void){
     GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
 
+    //pyramid
     VertexArray va;
     VA_Construct(&va);
-    VertexArray va2;
-    VA_Construct(&va2);
 
-    
     VertexBuffer vb;
     VB_Construct(positions, 5 * 5 * sizeof(float), &vb);
-    VertexBuffer vb2;
-    VB_Construct(positions2, 5 * 24 * sizeof(float), &vb2);
-    
+
     VertexBufferLayout vbl;
     VBL_Construct(&vbl);
     VBL_Pushfloat(3, &vbl);
     VBL_Pushfloat(2, &vbl);
+
+    VA_AddBuffer(&vb, &vbl, &va);
+
+    IndexBuffer ib;
+    IB_Construct(indices, 18, &ib);
+
+    
+    mat4 model;
+    glm_mat4_identity(model);
+
+    mat4 mvp;
+
+    Texture brick;
+    TX_Construct("../res/textures/brick.png", &brick);
+    TX_Bind(0, &brick);
+
+    //rectangle
+    VertexArray va2;
+    VA_Construct(&va2);
+
+    VertexBuffer vb2;
+    VB_Construct(positions2, 5 * 24 * sizeof(float), &vb2);
+    
     VertexBufferLayout vbl2;
     VBL_Construct(&vbl2);
     VBL_Pushfloat(3, &vbl2);
     VBL_Pushfloat(2, &vbl2);
     
-    VA_AddBuffer(&vb, &vbl, &va);
     VA_AddBuffer(&vb2, &vbl2, &va2);
-  
 
-    IndexBuffer ib;
-    IB_Construct(indices, 18, &ib);
     IndexBuffer ib2;
     IB_Construct(indices2, 36, &ib2);
 
+    mat4 model2;
+    glm_mat4_identity(model2);
 
+    mat4 mvp2;
+
+    Texture grass;
+    TX_Construct("../res/textures/grass.png", &grass);
+    TX_Bind(1, &grass);
+
+
+    //shared
     mat4 proj;
     glm_perspective(45.0f, (float)width / height, 0.1f, 100.0f, proj);
 
@@ -204,15 +219,8 @@ int main(void){
     glm_translate(view, viewtranslation);
 
 
-    mat4 model;
-    glm_mat4_identity(model);
-    mat4 model2;
-    glm_mat4_identity(model2);
     vec3 rotationaxis = {0.0f, 1.0f, 0.0f};
 
-
-    mat4 mvp;
-    mat4 mvp2;
     mat4 temp;
     glm_mat4_mul(proj, view, temp);
     glm_mat4_mul(temp, model, mvp);
@@ -221,18 +229,9 @@ int main(void){
     Shader shader;
     SH_Construct(&shader,"../res/shaders/Basic.glsl");
     SH_Bind(&shader);
-
-    SH_SetUniformMat4f(&shader, "u_MVP", mvp);
     
 
-    Texture brick;
-    TX_Construct("../res/textures/brick.png", &brick);
-    TX_Bind(0, &brick);
-    SH_SetUniform1i(&shader, "u_Texture", 0);
 
-    Texture grass;
-    TX_Construct("../res/textures/grass.png", &grass);
-    TX_Bind(1, &grass);
 
 
     float rotation = 0.0f;
@@ -359,46 +358,6 @@ int main(void){
 
 
 
-// void process_input(GLFWwindow* window, mat4 proj, mat4 view, mat4 model, vec3 viewtranslation){
-
-//     if(callback_keys.Wstate > GLFW_RELEASE){
-//         viewtranslation[2] += 0.1f;
-
-
-//     }
-//     if(callback_keys.Sstate > GLFW_RELEASE){
-//         viewtranslation[2] -= 0.1f;
-
-
-//     }
-//     if(callback_keys.Astate > GLFW_RELEASE){
-//         viewtranslation[0] += 0.1f;
-
-
-//     }
-//     if(callback_keys.Dstate > GLFW_RELEASE){
-//         viewtranslation[0] -= 0.1f;
-
-
-//     }
-//     if(callback_keys.SPACEState > GLFW_RELEASE){
-//         viewtranslation[1] -= 0.1f;
-
-
-//     }
-//     if(callback_keys.CTRLState > GLFW_RELEASE){
-//         viewtranslation[1] += 0.1f;
-
-
-//     }
-
-
-
-
-
-
-
-// }
 
 void processInput(GLFWwindow *window, mat4 *model, mat4 *view, mat4 *projection) {
     static vec3 cameraPos = {0.0f, 0.0f, 3.0f};  // Initial camera position
@@ -495,34 +454,3 @@ void processInput(GLFWwindow *window, mat4 *model, mat4 *view, mat4 *projection)
     glm_lookat(cameraPos, (vec3){cameraPos[0] + cameraFront[0], cameraPos[1] + cameraFront[1], cameraPos[2] + cameraFront[2]}, cameraUp, *view);
 }
 
-
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
-
-    
-    switch (key){
-    case GLFW_KEY_W:
-        callback_keys.Wstate = action;
-        break;
-    case GLFW_KEY_A:
-        callback_keys.Astate = action;
-        break;
-    case GLFW_KEY_S:
-        callback_keys.Sstate = action;
-        break;
-    case GLFW_KEY_D:
-        callback_keys.Dstate = action;
-        break;
-    case GLFW_KEY_SPACE:
-        callback_keys.SPACEState = action;
-        break;
-    case GLFW_KEY_LEFT_CONTROL:
-        callback_keys.CTRLState = action;
-        break;
-
-    default:
-        break;
-    }
-
-    
-
-}
