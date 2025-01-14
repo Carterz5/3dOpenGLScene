@@ -93,14 +93,43 @@ int main(void){
 
     float positions2[] =
     { //     COORDINATES     /   TexCoord  //
-        -2.0f, -0.1f,  0.5f, 	0.0f, 0.0f,
-        -1.0f, -0.1f,  0.5f, 	5.0f, 0.0f,
-        -1.0f,  0.1f,  0.5f, 	0.0f, 0.0f,
-        -2.0f,  0.1f,  0.5f, 	5.0f, 0.0f,
-        -2.0f, -0.1f, -2.0f, 	0.0f, 0.0f,
-        -1.0f, -0.1f, -2.0f, 	5.0f, 0.0f,
-        -1.0f,  0.1f, -2.0f, 	0.0f, 0.0f,
-        -2.0f,  0.1f, -2.0f, 	5.0f, 0.0f
+
+        //Front
+        -2.0f, -0.1f,  0.5f, 	0.0f, 0.7f,
+        -1.0f, -0.1f,  0.5f, 	0.5f, 0.7f,
+        -1.0f,  0.1f,  0.5f, 	0.5f, 0.99f,
+        -2.0f,  0.1f,  0.5f, 	0.0f, 0.99f,
+
+        //Back
+        -2.0f, -0.1f,  -2.0f, 	0.0f, 0.7f,
+        -1.0f, -0.1f,  -2.0f, 	0.5f, 0.7f,
+        -1.0f,  0.1f,  -2.0f, 	0.5f, 0.99f,
+        -2.0f,  0.1f,  -2.0f, 	0.0f, 0.99f,
+
+        //Left
+        -2.0f, -0.1f,  -2.0f, 	0.0f, 0.7f,
+        -2.0f, -0.1f,   0.5f, 	1.0f, 0.7f,
+        -2.0f,  0.1f,   0.5f, 	1.0f, 0.99f,
+        -2.0f,  0.1f,  -2.0f, 	0.0f, 0.99f,
+
+        //Right
+        -1.0f, -0.1f,   0.5f, 	0.0f, 0.7f,
+        -1.0f, -0.1f,  -2.0f, 	1.0f, 0.7f,
+        -1.0f,  0.1f,  -2.0f, 	1.0f, 0.99f,
+        -1.0f,  0.1f,   0.5f, 	0.0f, 0.99f,
+
+        //Top
+        -2.0f,  0.1f,  0.5f, 	0.0f, 0.39f,
+        -1.0f,  0.1f,  0.5f, 	1.0f, 0.39f,
+        -1.0f,  0.1f, -2.0f, 	1.0f, 0.65f,
+        -2.0f,  0.1f, -2.0f, 	0.0f, 0.65f,
+
+        //Bottom
+        -2.0f,  -0.1f, -2.0f, 	0.0f, 0.0f,
+        -1.0f,  -0.1f, -2.0f, 	1.0f, 0.0f,
+        -1.0f,  -0.1f,  0.5f, 	1.0f, 0.34f,
+        -2.0f,  -0.1f,  0.5f, 	0.0f, 0.34f
+
 
     };
 
@@ -114,20 +143,20 @@ int main(void){
         6, 7, 4,
 
         // Left face
-        0, 4, 7,
-        7, 3, 0,
+        8, 9, 10,
+        10, 11, 8,
 
         // Right face
-        1, 5, 6,
-        6, 2, 1,
+        12, 13, 14,
+        14, 15, 12,
 
         // Top face
-        3, 2, 6,
-        6, 7, 3,
+        16, 17, 18,
+        18, 19, 16,
 
         // Bottom face
-        0, 1, 5,
-        5, 4, 0
+        20, 21, 22,
+        22, 23, 20
     };
 
 
@@ -145,7 +174,7 @@ int main(void){
     VertexBuffer vb;
     VB_Construct(positions, 5 * 5 * sizeof(float), &vb);
     VertexBuffer vb2;
-    VB_Construct(positions2, 5 * 8 * sizeof(float), &vb2);
+    VB_Construct(positions2, 5 * 24 * sizeof(float), &vb2);
     
     VertexBufferLayout vbl;
     VBL_Construct(&vbl);
@@ -196,10 +225,14 @@ int main(void){
     SH_SetUniformMat4f(&shader, "u_MVP", mvp);
     
 
-    Texture texture;
-    TX_Construct("../res/textures/brick.png", &texture);
-    TX_Bind(0, &texture);
+    Texture brick;
+    TX_Construct("../res/textures/brick.png", &brick);
+    TX_Bind(0, &brick);
     SH_SetUniform1i(&shader, "u_Texture", 0);
+
+    Texture grass;
+    TX_Construct("../res/textures/grass.png", &grass);
+    TX_Bind(1, &grass);
 
 
     float rotation = 0.0f;
@@ -279,15 +312,20 @@ int main(void){
 
 
 
-
+        
         SH_Bind(&shader);
-        TX_Bind(0, &texture);
+        //pyramid
+        TX_Bind(0, &brick);
         SH_SetUniformMat4f(&shader, "u_MVP", mvp);
+        SH_SetUniform1i(&shader, "u_Texture", 0);
         R_Draw_IB(&va, &ib, &shader);
 
+
+        //Rectangle
+        TX_Bind(1, &grass);
+        SH_SetUniform1i(&shader, "u_Texture", 1);
         glm_mat4_mul(temp, model2, mvp2);
         SH_SetUniformMat4f(&shader, "u_MVP", mvp2);
-
         R_Draw_IB(&va2, &ib2, &shader);
 
 
@@ -313,7 +351,7 @@ int main(void){
     IB_Destruct(&ib);
     VB_Destruct(&vb);
     VA_Destruct(&va);
-    TX_Destruct(&texture);
+    TX_Destruct(&brick);
 
     glfwTerminate();
     return 0;
