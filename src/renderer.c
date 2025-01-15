@@ -90,6 +90,16 @@ void R_Draw_IB(VertexArray* va, IndexBuffer* ib, Shader* shader){
 
 };
 
+void R_Draw_IB_Instanced(VertexArray* va, IndexBuffer* ib, Shader* shader, unsigned int Icount){
+
+    SH_Bind(shader);
+    VA_Bind(va);
+    IB_Bind(ib);
+
+    GLCall(glDrawElementsInstanced(GL_TRIANGLES, ib->Count, GL_UNSIGNED_INT, NULL, Icount));
+
+};
+
 void R_Clear(){
 
     GLCall(glClear(GL_COLOR_BUFFER_BIT));

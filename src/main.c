@@ -21,11 +21,12 @@
 #define MAX_VERTEX_BUFFER 512 * 1024
 #define MAX_ELEMENT_BUFFER 128 * 1024
 
+float randomFloatInRange(float min, float max);
 
 
 
 int main(void){
-
+    srand(time(NULL));
 
     int width = 0, height = 0;
     GLFWwindow* window;
@@ -81,49 +82,49 @@ int main(void){
         3, 0, 4
     };
 
-    float positions2[] =
+    float positions_rectangle[] =
     { //     COORDINATES     /   TexCoord  //
 
         //Front
-        -2.0f, -0.1f,  0.5f, 	0.0f, 0.7f,
-        -1.0f, -0.1f,  0.5f, 	0.5f, 0.7f,
-        -1.0f,  0.1f,  0.5f, 	0.5f, 0.99f,
-        -2.0f,  0.1f,  0.5f, 	0.0f, 0.99f,
+        -0.5f, -0.1f,  0.5f, 	0.0f, 0.7f,
+         0.5f, -0.1f,  0.5f, 	0.5f, 0.7f,
+         0.5f,  0.1f,  0.5f, 	0.5f, 0.99f,
+        -0.5f,  0.1f,  0.5f, 	0.0f, 0.99f,
 
         //Back
-        -2.0f, -0.1f,  -2.0f, 	0.0f, 0.7f,
-        -1.0f, -0.1f,  -2.0f, 	0.5f, 0.7f,
-        -1.0f,  0.1f,  -2.0f, 	0.5f, 0.99f,
-        -2.0f,  0.1f,  -2.0f, 	0.0f, 0.99f,
+        -0.5f, -0.1f,  -2.0f, 	0.0f, 0.7f,
+         0.5f, -0.1f,  -2.0f, 	0.5f, 0.7f,
+         0.5f,  0.1f,  -2.0f, 	0.5f, 0.99f,
+        -0.5f,  0.1f,  -2.0f, 	0.0f, 0.99f,
 
         //Left
-        -2.0f, -0.1f,  -2.0f, 	0.0f, 0.7f,
-        -2.0f, -0.1f,   0.5f, 	1.0f, 0.7f,
-        -2.0f,  0.1f,   0.5f, 	1.0f, 0.99f,
-        -2.0f,  0.1f,  -2.0f, 	0.0f, 0.99f,
+        -0.5f, -0.1f,  -2.0f, 	0.0f, 0.7f,
+        -0.5f, -0.1f,   0.5f, 	1.0f, 0.7f,
+        -0.5f,  0.1f,   0.5f, 	1.0f, 0.99f,
+        -0.5f,  0.1f,  -2.0f, 	0.0f, 0.99f,
 
         //Right
-        -1.0f, -0.1f,   0.5f, 	0.0f, 0.7f,
-        -1.0f, -0.1f,  -2.0f, 	1.0f, 0.7f,
-        -1.0f,  0.1f,  -2.0f, 	1.0f, 0.99f,
-        -1.0f,  0.1f,   0.5f, 	0.0f, 0.99f,
+         0.5f, -0.1f,   0.5f, 	0.0f, 0.7f,
+         0.5f, -0.1f,  -2.0f, 	1.0f, 0.7f,
+         0.5f,  0.1f,  -2.0f, 	1.0f, 0.99f,
+         0.5f,  0.1f,   0.5f, 	0.0f, 0.99f,
 
         //Top
-        -2.0f,  0.1f,  0.5f, 	0.0f, 0.39f,
-        -1.0f,  0.1f,  0.5f, 	1.0f, 0.39f,
-        -1.0f,  0.1f, -2.0f, 	1.0f, 0.65f,
-        -2.0f,  0.1f, -2.0f, 	0.0f, 0.65f,
+        -0.5f,  0.1f,  0.5f, 	0.0f, 0.39f,
+         0.5f,  0.1f,  0.5f, 	1.0f, 0.39f,
+         0.5f,  0.1f, -2.0f, 	1.0f, 0.65f,
+        -0.5f,  0.1f, -2.0f, 	0.0f, 0.65f,
 
         //Bottom
-        -2.0f,  -0.1f, -2.0f, 	0.0f, 0.0f,
-        -1.0f,  -0.1f, -2.0f, 	1.0f, 0.0f,
-        -1.0f,  -0.1f,  0.5f, 	1.0f, 0.34f,
-        -2.0f,  -0.1f,  0.5f, 	0.0f, 0.34f
+        -0.5f,  -0.1f, -2.0f, 	0.0f, 0.0f,
+         0.5f,  -0.1f, -2.0f, 	1.0f, 0.0f,
+         0.5f,  -0.1f,  0.5f, 	1.0f, 0.34f,
+        -0.5f,  -0.1f,  0.5f, 	0.0f, 0.34f
 
 
     };
 
-    unsigned int indices2[] = {
+    unsigned int indices_rectangle[] = {
         // Front face
         0, 1, 2,
         2, 3, 0,
@@ -147,6 +148,88 @@ int main(void){
         // Bottom face
         20, 21, 22,
         22, 23, 20
+    };
+
+
+    float positions_skybox[] =
+    { //     COORDINATES     /   TexCoord  //
+        //X     Y       Z       U       V
+        //Front
+        -50.0f, -50.0f,  50.0f, 	0.25f, 0.3333f,
+         50.0f, -50.0f,  50.0f, 	0.5f,  0.3333f,
+         50.0f,  50.0f,  50.0f, 	0.5f,  0.6666f,
+        -50.0f,  50.0f,  50.0f, 	0.25f, 0.6666f,
+
+        //Back
+        -50.0f, -50.0f, -50.0f, 	1.0f, 0.3333f,
+         50.0f, -50.0f, -50.0f, 	0.75f,  0.3333f,
+         50.0f,  50.0f, -50.0f, 	0.75f,  0.6666f,
+        -50.0f,  50.0f, -50.0f, 	1.0f, 0.6666f,
+
+        //Left
+        -50.0f, -50.0f, -50.0f, 	0.0f,  0.3333f,
+        -50.0f, -50.0f,  50.0f, 	0.25f, 0.3333f,
+        -50.0f,  50.0f,  50.0f, 	0.25f, 0.6666f,
+        -50.0f,  50.0f, -50.0f, 	0.0f,  0.6666f,
+
+        //Right
+         50.0f, -50.0f,  50.0f, 	0.5f,  0.3333f,
+         50.0f, -50.0f, -50.0f, 	0.75f, 0.3333f,
+         50.0f,  50.0f, -50.0f, 	0.75f, 0.6666f,
+         50.0f,  50.0f,  50.0f, 	0.5f,  0.6666f,
+
+        //Top
+        -50.0f,  50.0f,  50.0f, 	0.25f, 0.6666f,
+         50.0f,  50.0f,  50.0f, 	0.5f,  0.6666f,
+         50.0f,  50.0f, -50.0f, 	0.5f,  1.0f,
+        -50.0f,  50.0f, -50.0f, 	0.25f, 1.0f,
+
+        //Bottom
+        -50.0f, -50.0f, -50.0f, 	0.25f, 0.0f,
+         50.0f, -50.0f, -50.0f, 	0.5f,  0.0f,
+         50.0f, -50.0f,  50.0f, 	0.5f,  0.3333f,
+        -50.0f, -50.0f,  50.0f, 	0.25f, 0.3333f
+
+
+    };
+
+    unsigned int indices_skybox[] = {
+        // Front face
+        0, 1, 2,
+        2, 3, 0,
+
+        // Back face
+        4, 5, 6,
+        6, 7, 4,
+
+        // Left face
+        8, 9, 10,
+        10, 11, 8,
+
+        // Right face
+        12, 13, 14,
+        14, 15, 12,
+
+        // Top face
+        16, 17, 18,
+        18, 19, 16,
+
+        // Bottom face
+        20, 21, 22,
+        22, 23, 20
+    };
+
+    float positions_blade[] =
+    { //     COORDINATES     /   TexCoord  //
+         0.4f,  0.1f,  0.5f, 	0.0f, 0.0f,
+         0.5f,  0.1f,  0.5f, 	1.0f, 0.0f,
+         0.5f,  0.2f,  0.5f, 	1.0f, 1.0f,
+         0.4f,  0.2f,  0.5f, 	0.0f, 1.0f
+    };
+
+    unsigned int indices_blade[] = {
+        0, 1, 2,
+        2, 3, 0
     };
 
 
@@ -183,31 +266,87 @@ int main(void){
     TX_Bind(0, &brick);
 
     //rectangle
-    VertexArray va2;
-    VA_Construct(&va2);
+    VertexArray va_rectangle;
+    VA_Construct(&va_rectangle);
 
-    VertexBuffer vb2;
-    VB_Construct(positions2, 5 * 24 * sizeof(float), &vb2);
+    VertexBuffer vb_rectangle;
+    VB_Construct(positions_rectangle, 5 * 24 * sizeof(float), &vb_rectangle);
     
-    VertexBufferLayout vbl2;
-    VBL_Construct(&vbl2);
-    VBL_Pushfloat(3, &vbl2);
-    VBL_Pushfloat(2, &vbl2);
+    VertexBufferLayout vbl_rectangle;
+    VBL_Construct(&vbl_rectangle);
+    VBL_Pushfloat(3, &vbl_rectangle);
+    VBL_Pushfloat(2, &vbl_rectangle);
     
-    VA_AddBuffer(&vb2, &vbl2, &va2);
+    VA_AddBuffer(&vb_rectangle, &vbl_rectangle, &va_rectangle);
 
-    IndexBuffer ib2;
-    IB_Construct(indices2, 36, &ib2);
+    IndexBuffer ib_rectangle;
+    IB_Construct(indices_rectangle, 36, &ib_rectangle);
 
-    mat4 model2;
-    glm_mat4_identity(model2);
+    mat4 model_rectangle;
+    glm_mat4_identity(model_rectangle);
+    vec3 rectangle_translate = {-1.5f, 0.0f, 0.0f};
+    glm_translate(model_rectangle, rectangle_translate);
 
-    mat4 mvp2;
+    mat4 mvp_rectangle;
 
     Texture grass;
     TX_Construct("../res/textures/grass.png", &grass);
     TX_Bind(1, &grass);
 
+    //skybox
+    VertexArray va_skybox;
+    VA_Construct(&va_skybox);
+
+    VertexBuffer vb_skybox;
+    VB_Construct(positions_skybox, 5 * 24 * sizeof(float), &vb_skybox);
+    
+    VertexBufferLayout vbl_skybox;
+    VBL_Construct(&vbl_skybox);
+    VBL_Pushfloat(3, &vbl_skybox);
+    VBL_Pushfloat(2, &vbl_skybox);
+    
+    VA_AddBuffer(&vb_skybox, &vbl_skybox, &va_skybox);
+
+    IndexBuffer ib_skybox;
+    IB_Construct(indices_skybox, 36, &ib_skybox);
+
+    mat4 model_skybox;
+    glm_mat4_identity(model_skybox);
+
+    mat4 mvp_skybox;
+
+    Texture skybox;
+    TX_Construct("../res/textures/cubemaps_skybox.png", &skybox);
+    TX_Bind(2, &skybox);
+
+
+    //blade
+    VertexArray va_blade;
+    VA_Construct(&va_blade);
+
+    VertexBuffer vb_blade;
+    VB_Construct(positions_blade, 5 * 4 * sizeof(float), &vb_blade);
+    
+    VertexBufferLayout vbl_blade;
+    VBL_Construct(&vbl_blade);
+    VBL_Pushfloat(3, &vbl_blade);
+    VBL_Pushfloat(2, &vbl_blade);
+    
+    VA_AddBuffer(&vb_blade, &vbl_blade, &va_blade);
+
+    IndexBuffer ib_blade;
+    IB_Construct(indices_blade, 6, &ib_blade);
+
+    mat4 model_blade;
+    glm_mat4_identity(model_blade);
+    vec3 blade_translate = {-1.5f, 0.0f, 0.0f};
+    glm_translate(model_blade, blade_translate);
+
+    mat4 mvp_blade;
+
+    Texture blade;
+    TX_Construct("../res/textures/grassblade.png", &blade);
+    TX_Bind(3, &blade);
 
     //shared
     mat4 proj;
@@ -215,7 +354,7 @@ int main(void){
 
     mat4 view;
     glm_mat4_identity(view);
-    vec3 viewtranslation = { 0.0f, -0.5f, -2.0f};
+    vec3 viewtranslation = { -5.0f, 5.0f, -2.0f};
     glm_translate(view, viewtranslation);
 
 
@@ -229,9 +368,20 @@ int main(void){
     Shader shader;
     SH_Construct(&shader,"../res/shaders/Basic.glsl");
     SH_Bind(&shader);
+
+    Shader shader_instance;
+    SH_Construct(&shader_instance,"../res/shaders/Instancing.glsl");
+
     
 
+    float offsets[400 * 3]; // 3 floats per vec3, 400 offsets
+    for (int i = 0; i < 400; ++i) {
+        offsets[i * 3 + 0] = randomFloatInRange(-0.9, -0.01f);
+        offsets[i * 3 + 1] = 0 * i;
+        offsets[i * 3 + 2] = randomFloatInRange(-2.5, -0.01f);
+    }
 
+    SH_SetUniform3fv(&shader_instance, "u_Offsets", offsets, 400);
 
 
     float rotation = 0.0f;
@@ -313,7 +463,7 @@ int main(void){
 
         
         SH_Bind(&shader);
-        //pyramid
+        //Pyramid
         TX_Bind(0, &brick);
         SH_SetUniformMat4f(&shader, "u_MVP", mvp);
         SH_SetUniform1i(&shader, "u_Texture", 0);
@@ -323,10 +473,27 @@ int main(void){
         //Rectangle
         TX_Bind(1, &grass);
         SH_SetUniform1i(&shader, "u_Texture", 1);
-        glm_mat4_mul(temp, model2, mvp2);
-        SH_SetUniformMat4f(&shader, "u_MVP", mvp2);
-        R_Draw_IB(&va2, &ib2, &shader);
+        glm_mat4_mul(temp, model_rectangle, mvp_rectangle);
+        SH_SetUniformMat4f(&shader, "u_MVP", mvp_rectangle);
+        R_Draw_IB(&va_rectangle, &ib_rectangle, &shader);
 
+
+        //Skybox
+        TX_Bind(2, &skybox);
+        SH_SetUniform1i(&shader, "u_Texture", 2);
+        glm_mat4_mul(temp, model_skybox, mvp_skybox);
+        SH_SetUniformMat4f(&shader, "u_MVP", mvp_skybox);
+        R_Draw_IB(&va_skybox, &ib_skybox, &shader);
+
+        //Blade
+        GLCall(glDepthMask(GL_FALSE));
+        SH_Bind(&shader_instance);
+        TX_Bind(3, &blade);
+        SH_SetUniform1i(&shader_instance, "u_Texture", 3);
+        glm_mat4_mul(temp, model_blade, mvp_blade);
+        SH_SetUniformMat4f(&shader_instance, "u_MVP", mvp_blade);
+        R_Draw_IB_Instanced(&va_blade, &ib_blade, &shader_instance, 1000);
+        GLCall(glDepthMask(GL_TRUE));
 
         glfwGetWindowSize(window, &width, &height);
         glViewport(0, 0, width, height);
@@ -360,7 +527,7 @@ int main(void){
 
 
 void processInput(GLFWwindow *window, mat4 *model, mat4 *view, mat4 *projection) {
-    static vec3 cameraPos = {0.0f, 0.0f, 3.0f};  // Initial camera position
+    static vec3 cameraPos = {-0.75f, 0.5f, 2.0f};  // Initial camera position
     static vec3 cameraFront = {0.0f, 0.0f, -1.0f}; // Camera forward direction
     static vec3 cameraUp = {0.0f, 1.0f, 0.0f};    // Camera up direction
 
@@ -454,3 +621,13 @@ void processInput(GLFWwindow *window, mat4 *model, mat4 *view, mat4 *projection)
     glm_lookat(cameraPos, (vec3){cameraPos[0] + cameraFront[0], cameraPos[1] + cameraFront[1], cameraPos[2] + cameraFront[2]}, cameraUp, *view);
 }
 
+
+
+float randomFloatInRange(float min, float max) {
+    if (min > max) {
+        float temp = min;
+        min = max;
+        max = temp;
+    }
+    return min + ((float)rand() / RAND_MAX) * (max - min);
+}
