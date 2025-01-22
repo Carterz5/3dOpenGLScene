@@ -73,6 +73,12 @@ void SH_SetUniform4f(Shader* shader, char* name, float v0, float v1, float v2, f
 
 };
 
+void SH_SetUniform3f(Shader* shader, char* name, float v0, float v1, float v2){
+    SH_Bind(shader);
+    GLCall(glUniform3f(SH_GetUniformLocation(shader, name), v0, v1, v2));
+
+};
+
 void SH_SetUniform3fv(Shader* shader, char* name, float values[], unsigned int count){
     SH_Bind(shader);
     GLCall(glUniform3fv(SH_GetUniformLocation(shader, name), count, values));

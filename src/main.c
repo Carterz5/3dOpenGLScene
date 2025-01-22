@@ -17,7 +17,7 @@
 #include "cglm/mat4.h"
 
 
-
+#define GRASS_AMOUNT 200
 #define MAX_VERTEX_BUFFER 512 * 1024
 #define MAX_ELEMENT_BUFFER 128 * 1024
 
@@ -42,7 +42,7 @@ int main(void){
 
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(1024, 768, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(1920, 1080, "Hello World", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -52,6 +52,7 @@ int main(void){
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
     glfwGetWindowSize(window, &width, &height);
+
 
 
     if (glewInit() != GLEW_OK){
@@ -86,40 +87,40 @@ int main(void){
     { //     COORDINATES     /   TexCoord  //
 
         //Front
-        -0.5f, -0.1f,  0.5f, 	0.0f, 0.7f,
-         0.5f, -0.1f,  0.5f, 	0.5f, 0.7f,
-         0.5f,  0.1f,  0.5f, 	0.5f, 0.99f,
-        -0.5f,  0.1f,  0.5f, 	0.0f, 0.99f,
+        -0.5f, -0.1f,  0.5f, 	0.0f, 0.532f,
+         0.5f, -0.1f,  0.5f, 	0.5f, 0.532f,
+         0.5f,  0.1f,  0.5f, 	0.5f, 1.0f,
+        -0.5f,  0.1f,  0.5f, 	0.0f, 1.0f,
 
         //Back
-        -0.5f, -0.1f,  -2.0f, 	0.0f, 0.7f,
-         0.5f, -0.1f,  -2.0f, 	0.5f, 0.7f,
-         0.5f,  0.1f,  -2.0f, 	0.5f, 0.99f,
-        -0.5f,  0.1f,  -2.0f, 	0.0f, 0.99f,
+        -0.5f, -0.1f,  -2.0f, 	0.0f, 0.532f,
+         0.5f, -0.1f,  -2.0f, 	0.5f, 0.532f,
+         0.5f,  0.1f,  -2.0f, 	0.5f, 1.0f,
+        -0.5f,  0.1f,  -2.0f, 	0.0f, 1.0f,
 
         //Left
-        -0.5f, -0.1f,  -2.0f, 	0.0f, 0.7f,
-        -0.5f, -0.1f,   0.5f, 	1.0f, 0.7f,
-        -0.5f,  0.1f,   0.5f, 	1.0f, 0.99f,
-        -0.5f,  0.1f,  -2.0f, 	0.0f, 0.99f,
+        -0.5f, -0.1f,  -2.0f, 	0.0f, 0.532f,
+        -0.5f, -0.1f,   0.5f, 	0.5f, 0.532f,
+        -0.5f,  0.1f,   0.5f, 	0.5f, 1.0f,
+        -0.5f,  0.1f,  -2.0f, 	0.0f, 1.0f,
 
         //Right
-         0.5f, -0.1f,   0.5f, 	0.0f, 0.7f,
-         0.5f, -0.1f,  -2.0f, 	1.0f, 0.7f,
-         0.5f,  0.1f,  -2.0f, 	1.0f, 0.99f,
-         0.5f,  0.1f,   0.5f, 	0.0f, 0.99f,
+         0.5f, -0.1f,   0.5f, 	0.0f, 0.532f,
+         0.5f, -0.1f,  -2.0f, 	0.5f, 0.532f,
+         0.5f,  0.1f,  -2.0f, 	0.5f, 1.0f,
+         0.5f,  0.1f,   0.5f, 	0.0f, 1.0f,
 
         //Top
-        -0.5f,  0.1f,  0.5f, 	0.0f, 0.39f,
-         0.5f,  0.1f,  0.5f, 	1.0f, 0.39f,
-         0.5f,  0.1f, -2.0f, 	1.0f, 0.65f,
-        -0.5f,  0.1f, -2.0f, 	0.0f, 0.65f,
+        -0.5f,  0.1f,  0.5f, 	0.0f, 0.0f,
+         0.5f,  0.1f,  0.5f, 	1.0f, 0.0f,
+         0.5f,  0.1f, -2.0f, 	1.0f, 0.5f,
+        -0.5f,  0.1f, -2.0f, 	0.0f, 0.5f,
 
         //Bottom
-        -0.5f,  -0.1f, -2.0f, 	0.0f, 0.0f,
-         0.5f,  -0.1f, -2.0f, 	1.0f, 0.0f,
-         0.5f,  -0.1f,  0.5f, 	1.0f, 0.34f,
-        -0.5f,  -0.1f,  0.5f, 	0.0f, 0.34f
+        -0.5f,  -0.1f, -2.0f, 	0.0f, 0.532f,
+         0.5f,  -0.1f, -2.0f, 	0.5f, 0.532f,
+         0.5f,  -0.1f,  0.5f, 	0.5f, 1.0f,
+        -0.5f,  -0.1f,  0.5f, 	0.0f, 1.0f
 
 
     };
@@ -155,40 +156,40 @@ int main(void){
     { //     COORDINATES     /   TexCoord  //
         //X     Y       Z       U       V
         //Front
-        -50.0f, -50.0f,  50.0f, 	0.25f, 0.3333f,
-         50.0f, -50.0f,  50.0f, 	0.5f,  0.3333f,
-         50.0f,  50.0f,  50.0f, 	0.5f,  0.6666f,
-        -50.0f,  50.0f,  50.0f, 	0.25f, 0.6666f,
+        -50.0f, -50.0f,  50.0f, 	0.2501f, 0.33334f,
+         50.0f, -50.0f,  50.0f, 	0.5f,  0.33334f,
+         50.0f,  50.0f,  50.0f, 	0.5f,  0.665f,
+        -50.0f,  50.0f,  50.0f, 	0.2501f, 0.665f,
 
         //Back
-        -50.0f, -50.0f, -50.0f, 	1.0f, 0.3333f,
-         50.0f, -50.0f, -50.0f, 	0.75f,  0.3333f,
-         50.0f,  50.0f, -50.0f, 	0.75f,  0.6666f,
-        -50.0f,  50.0f, -50.0f, 	1.0f, 0.6666f,
+        -50.0f, -50.0f, -50.0f, 	1.0f,  0.33334f,
+         50.0f, -50.0f, -50.0f, 	0.75f, 0.33334f,
+         50.0f,  50.0f, -50.0f, 	0.75f, 0.665f,
+        -50.0f,  50.0f, -50.0f, 	1.0f,  0.665f,
 
         //Left
-        -50.0f, -50.0f, -50.0f, 	0.0f,  0.3333f,
-        -50.0f, -50.0f,  50.0f, 	0.25f, 0.3333f,
-        -50.0f,  50.0f,  50.0f, 	0.25f, 0.6666f,
-        -50.0f,  50.0f, -50.0f, 	0.0f,  0.6666f,
+        -50.0f, -50.0f, -50.0f, 	0.0f,  0.33334f,
+        -50.0f, -50.0f,  50.0f, 	0.25f, 0.33334f,
+        -50.0f,  50.0f,  50.0f, 	0.25f, 0.665f,
+        -50.0f,  50.0f, -50.0f, 	0.0f,  0.665f,
 
         //Right
-         50.0f, -50.0f,  50.0f, 	0.5f,  0.3333f,
-         50.0f, -50.0f, -50.0f, 	0.75f, 0.3333f,
-         50.0f,  50.0f, -50.0f, 	0.75f, 0.6666f,
-         50.0f,  50.0f,  50.0f, 	0.5f,  0.6666f,
+         50.0f, -50.0f,  50.0f, 	0.5f,  0.33334f,
+         50.0f, -50.0f, -50.0f, 	0.75f, 0.33334f,
+         50.0f,  50.0f, -50.0f, 	0.75f, 0.665f,
+         50.0f,  50.0f,  50.0f, 	0.5f,  0.665f,
 
         //Top
-        -50.0f,  50.0f,  50.0f, 	0.25f, 0.6666f,
-         50.0f,  50.0f,  50.0f, 	0.5f,  0.6666f,
-         50.0f,  50.0f, -50.0f, 	0.5f,  1.0f,
-        -50.0f,  50.0f, -50.0f, 	0.25f, 1.0f,
+        -50.0f,  50.0f,  50.0f, 	0.2501f,  0.665f,
+         50.0f,  50.0f,  50.0f, 	0.499f, 0.665f,
+         50.0f,  50.0f, -50.0f, 	0.499f, 0.9999f,
+        -50.0f,  50.0f, -50.0f, 	0.2501f,  0.9999f,
 
         //Bottom
-        -50.0f, -50.0f, -50.0f, 	0.25f, 0.0f,
-         50.0f, -50.0f, -50.0f, 	0.5f,  0.0f,
-         50.0f, -50.0f,  50.0f, 	0.5f,  0.3333f,
-        -50.0f, -50.0f,  50.0f, 	0.25f, 0.3333f
+        -50.0f, -50.0f, -50.0f, 	0.2501f,  0.001f,
+         50.0f, -50.0f, -50.0f, 	0.499f, 0.001f,
+         50.0f, -50.0f,  50.0f, 	0.499f, 0.33334f,
+        -50.0f, -50.0f,  50.0f, 	0.2501f,  0.33334f
 
 
     };
@@ -219,13 +220,13 @@ int main(void){
         22, 23, 20
     };
 
-    float positions_blade[] =
-    { //     COORDINATES     /   TexCoord  //
-         0.4f,  0.1f,  0.5f, 	0.0f, 0.0f,
-         0.5f,  0.1f,  0.5f, 	1.0f, 0.0f,
-         0.5f,  0.2f,  0.5f, 	1.0f, 1.0f,
-         0.4f,  0.2f,  0.5f, 	0.0f, 1.0f
-    };
+float positions_blade[] = {
+    //     COORDINATES     /   TexCoord  //
+    -0.05f, 0.0f,  0.0f,    0.0f, 0.0f,  // Left bottom
+     0.05f, 0.0f,  0.0f,    1.0f, 0.0f,  // Right bottom
+     0.05f, 0.1f,  0.0f,    1.0f, 1.0f,  // Right top
+    -0.05f, 0.1f,  0.0f,    0.0f, 1.0f   // Left top
+};
 
     unsigned int indices_blade[] = {
         0, 1, 2,
@@ -290,7 +291,7 @@ int main(void){
     mat4 mvp_rectangle;
 
     Texture grass;
-    TX_Construct("../res/textures/grass.png", &grass);
+    TX_Construct("../res/textures/ground.png", &grass);
     TX_Bind(1, &grass);
 
     //skybox
@@ -316,7 +317,7 @@ int main(void){
     mat4 mvp_skybox;
 
     Texture skybox;
-    TX_Construct("../res/textures/cubemaps_skybox.png", &skybox);
+    TX_Construct("../res/textures/skybox.png", &skybox);
     TX_Bind(2, &skybox);
 
 
@@ -339,8 +340,8 @@ int main(void){
 
     mat4 model_blade;
     glm_mat4_identity(model_blade);
-    vec3 blade_translate = {-1.5f, 0.0f, 0.0f};
-    glm_translate(model_blade, blade_translate);
+    // vec3 blade_translate = {-1.5f, 0.0f, 0.0f};
+    // glm_translate(model_blade, blade_translate);
 
     mat4 mvp_blade;
 
@@ -374,19 +375,20 @@ int main(void){
 
     
 
-    float offsets[400 * 3]; // 3 floats per vec3, 400 offsets
-    for (int i = 0; i < 400; ++i) {
-        offsets[i * 3 + 0] = randomFloatInRange(-0.9, -0.01f);
-        offsets[i * 3 + 1] = 0 * i;
-        offsets[i * 3 + 2] = randomFloatInRange(-2.5, -0.01f);
+    float offsets[GRASS_AMOUNT * 3]; // 3 floats per vec3, GRASS_AMOUNT offsets
+    for (int i = 0; i < GRASS_AMOUNT; ++i) {
+        offsets[i * 3 + 0] = randomFloatInRange(-1.95f, -1.05f);  
+        offsets[i * 3 + 1] = 0.1f;                             
+        offsets[i * 3 + 2] = randomFloatInRange(-1.95f, 0.45f);  
     }
 
-    SH_SetUniform3fv(&shader_instance, "u_Offsets", offsets, 400);
+    SH_SetUniform3fv(&shader_instance, "u_Offsets", offsets, GRASS_AMOUNT);
 
 
     float rotation = 0.0f;
 
     GLCall(glEnable(GL_DEPTH_TEST));
+    float camera[3] = {0.0f, 0.0f, 0.0f};
 
     VA_Unbind();
     SH_Unbind();
@@ -405,13 +407,8 @@ int main(void){
     {
         /* Render here */
         GLCall(glClearColor(bgr,bgg,bgb,bga));
-        GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT))
+        GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
-        //Different way to limit framerate than Cherno. glfwSwapInterval was not working on virtual machine.
-        while (glfwGetTime() < lasttime + 1.0/TARGET_FPS) {
-
-        };
-        lasttime += 1.0/TARGET_FPS;
 
 
         double currentTime = glfwGetTime();
@@ -490,20 +487,21 @@ int main(void){
         SH_Bind(&shader_instance);
         TX_Bind(3, &blade);
         SH_SetUniform1i(&shader_instance, "u_Texture", 3);
-        glm_mat4_mul(temp, model_blade, mvp_blade);
-        SH_SetUniformMat4f(&shader_instance, "u_MVP", mvp_blade);
-        R_Draw_IB_Instanced(&va_blade, &ib_blade, &shader_instance, 1000);
+        //glm_mat4_mul(temp, model_blade, mvp_blade);
+        SH_SetUniform3f(&shader_instance, "cameraPosition", camera[0], camera[1], camera[2]);
+        SH_SetUniformMat4f(&shader_instance, "projectionMatrix", proj);
+        //SH_SetUniformMat4f(&shader_instance, "modelMatrix", model_blade);
+        SH_SetUniformMat4f(&shader_instance, "viewMatrix", view);
+        //R_Draw_IB(&va_blade, &ib_blade, &shader_instance);
+        R_Draw_IB_Instanced(&va_blade, &ib_blade, &shader_instance, GRASS_AMOUNT);
         GLCall(glDepthMask(GL_TRUE));
 
         glfwGetWindowSize(window, &width, &height);
         glViewport(0, 0, width, height);
 
 
-        GLCall(glEnable(GL_BLEND));
-        GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
-
-        processInput(window, model, view, proj);
+        processInput(window, view, camera);
 
 
         /* Swap front and back buffers */
@@ -526,7 +524,7 @@ int main(void){
 
 
 
-void processInput(GLFWwindow *window, mat4 *model, mat4 *view, mat4 *projection) {
+void processInput(GLFWwindow *window, mat4 *view, float cameraout[3]) {
     static vec3 cameraPos = {-0.75f, 0.5f, 2.0f};  // Initial camera position
     static vec3 cameraFront = {0.0f, 0.0f, -1.0f}; // Camera forward direction
     static vec3 cameraUp = {0.0f, 1.0f, 0.0f};    // Camera up direction
@@ -619,6 +617,9 @@ void processInput(GLFWwindow *window, mat4 *model, mat4 *view, mat4 *projection)
 
     // Update the view matrix
     glm_lookat(cameraPos, (vec3){cameraPos[0] + cameraFront[0], cameraPos[1] + cameraFront[1], cameraPos[2] + cameraFront[2]}, cameraUp, *view);
+    cameraout[0] = cameraPos[0];
+    cameraout[1] = cameraPos[1];
+    cameraout[2] = cameraPos[2];
 }
 
 

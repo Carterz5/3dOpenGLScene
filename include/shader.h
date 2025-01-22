@@ -33,6 +33,7 @@ void SH_SetUniform1i(Shader* shader, char* name, int value);
 void SH_SetUniform1iv(Shader* shader, char* name, unsigned int count, int value[]);
 void SH_SetUniform1f(Shader* shader, char* name, float value);
 void SH_SetUniformMat4f(Shader* shader, char* name, mat4 matrix);
+void SH_SetUniform3f(Shader* shader, char* name, float v0, float v1, float v2);
 void SH_SetUniform4f(Shader* shader, char* name, float v0, float v1, float v2, float v3);
 void SH_SetUniform3fv(Shader* shader, char* name, float values[], unsigned int count);
 int SH_GetUniformLocation(Shader* shader, char* name);

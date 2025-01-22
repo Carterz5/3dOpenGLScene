@@ -6,14 +6,48 @@ layout(location = 1) in vec2 texCoord;
 
 out vec2 v_TexCoord;
 
-uniform mat4 u_MVP;
-uniform vec3 u_Offsets[400];
+
+uniform mat4 projectionMatrix;
+uniform mat4 viewMatrix;
+uniform mat4 modelMatrix;
+
+uniform vec3 u_Offsets[200];
+uniform vec3 cameraPosition;
+
 
 void main()
 {
+    // Get the instance offset
     vec3 offset = u_Offsets[gl_InstanceID];
-    vec4 extendedOffset = vec4(offset, 0.0);
-    gl_Position = u_MVP * (position + extendedOffset);
+    
+    // Calculate the world position for this instance
+    vec3 instancePos = offset; // Since model matrix is identity
+    
+    // Calculate the direction to camera for this instance
+    vec3 toCamera = normalize(cameraPosition - instancePos);
+    
+    // Calculate the right vector (perpendicular to up and toCamera)
+    vec3 right = normalize(cross(vec3(0.0, 1.0, 0.0), toCamera));
+    
+    // Calculate final up vector (ensures orthogonal basis)
+    vec3 up = vec3(0.0, 1.0, 0.0);
+    
+    // Build the billboard rotation matrix
+    mat3 billboardRotation = mat3(
+        right,          // X axis
+        up,            // Y axis
+        cross(right, up) // Z axis
+    );
+    
+    // Transform the vertex position
+    vec3 billboardPos = billboardRotation * position.xyz;
+    
+    // Offset the position to instance location
+    vec3 finalPosition = billboardPos + instancePos;
+    
+    // Final clip space position
+    gl_Position = projectionMatrix * viewMatrix * vec4(finalPosition, 1.0);
+    
     v_TexCoord = texCoord;
 }
 
