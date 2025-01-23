@@ -89,37 +89,37 @@ int main(void){
         //Front
         -0.5f, -0.1f,  0.5f, 	0.0f, 0.532f,
          0.5f, -0.1f,  0.5f, 	0.5f, 0.532f,
-         0.5f,  0.1f,  0.5f, 	0.5f, 1.0f,
-        -0.5f,  0.1f,  0.5f, 	0.0f, 1.0f,
+         0.5f,  0.1f,  0.5f, 	0.5f, 0.65f,
+        -0.5f,  0.1f,  0.5f, 	0.0f, 0.65f,
 
         //Back
         -0.5f, -0.1f,  -2.0f, 	0.0f, 0.532f,
          0.5f, -0.1f,  -2.0f, 	0.5f, 0.532f,
-         0.5f,  0.1f,  -2.0f, 	0.5f, 1.0f,
-        -0.5f,  0.1f,  -2.0f, 	0.0f, 1.0f,
+         0.5f,  0.1f,  -2.0f, 	0.5f, 0.65f,
+        -0.5f,  0.1f,  -2.0f, 	0.0f, 0.65f,
 
         //Left
         -0.5f, -0.1f,  -2.0f, 	0.0f, 0.532f,
         -0.5f, -0.1f,   0.5f, 	0.5f, 0.532f,
-        -0.5f,  0.1f,   0.5f, 	0.5f, 1.0f,
-        -0.5f,  0.1f,  -2.0f, 	0.0f, 1.0f,
+        -0.5f,  0.1f,   0.5f, 	0.5f, 0.60f,
+        -0.5f,  0.1f,  -2.0f, 	0.0f, 0.60f,
 
         //Right
          0.5f, -0.1f,   0.5f, 	0.0f, 0.532f,
          0.5f, -0.1f,  -2.0f, 	0.5f, 0.532f,
-         0.5f,  0.1f,  -2.0f, 	0.5f, 1.0f,
-         0.5f,  0.1f,   0.5f, 	0.0f, 1.0f,
+         0.5f,  0.1f,  -2.0f, 	0.5f, 0.60f,
+         0.5f,  0.1f,   0.5f, 	0.0f, 0.60f,
 
         //Top
-        -0.5f,  0.1f,  0.5f, 	0.0f, 0.0f,
-         0.5f,  0.1f,  0.5f, 	1.0f, 0.0f,
-         0.5f,  0.1f, -2.0f, 	1.0f, 0.5f,
-        -0.5f,  0.1f, -2.0f, 	0.0f, 0.5f,
+        -0.5f,  0.1f,  0.5f, 	0.0f, 0.53f,
+         0.5f,  0.1f,  0.5f, 	0.0f, 0.0f,
+         0.5f,  0.1f, -2.0f, 	1.0f, 0.0f,
+        -0.5f,  0.1f, -2.0f, 	1.0f, 0.53f,
 
         //Bottom
         -0.5f,  -0.1f, -2.0f, 	0.0f, 0.532f,
-         0.5f,  -0.1f, -2.0f, 	0.5f, 0.532f,
-         0.5f,  -0.1f,  0.5f, 	0.5f, 1.0f,
+         0.5f,  -0.1f, -2.0f, 	0.25f, 0.532f,
+         0.5f,  -0.1f,  0.5f, 	0.25f, 1.0f,
         -0.5f,  -0.1f,  0.5f, 	0.0f, 1.0f
 
 
@@ -222,10 +222,10 @@ int main(void){
 
 float positions_blade[] = {
     //     COORDINATES     /   TexCoord  //
-    -0.05f, 0.0f,  0.0f,    0.0f, 0.0f,  // Left bottom
-     0.05f, 0.0f,  0.0f,    1.0f, 0.0f,  // Right bottom
-     0.05f, 0.1f,  0.0f,    1.0f, 1.0f,  // Right top
-    -0.05f, 0.1f,  0.0f,    0.0f, 1.0f   // Left top
+    -0.05f, 0.0f,  0.0f,    0.01f, 0.01f,  // Left bottom
+     0.05f, 0.0f,  0.0f,    0.99f, 0.01f,  // Right bottom
+     0.05f, 0.1f,  0.0f,    0.99f, 1.0f,  // Right top
+    -0.05f, 0.1f,  0.0f,    0.01f, 1.0f   // Left top
 };
 
     unsigned int indices_blade[] = {
@@ -402,6 +402,7 @@ float positions_blade[] = {
     const int FPS_SAMPLES = 100;
     double fpsSum = 0.0;
     int fpsCount = 0;
+    float time;
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
@@ -414,7 +415,7 @@ float positions_blade[] = {
         double currentTime = glfwGetTime();
         double frameTime = currentTime - previousTime;
         previousTime = currentTime;
-
+        time = (float)currentTime;
 
         if (frameTime > 0.25) {
             frameTime = 0.25;
@@ -487,11 +488,11 @@ float positions_blade[] = {
         SH_Bind(&shader_instance);
         TX_Bind(3, &blade);
         SH_SetUniform1i(&shader_instance, "u_Texture", 3);
-        //glm_mat4_mul(temp, model_blade, mvp_blade);
         SH_SetUniform3f(&shader_instance, "cameraPosition", camera[0], camera[1], camera[2]);
         SH_SetUniformMat4f(&shader_instance, "projectionMatrix", proj);
         //SH_SetUniformMat4f(&shader_instance, "modelMatrix", model_blade);
         SH_SetUniformMat4f(&shader_instance, "viewMatrix", view);
+        SH_SetUniform1f(&shader_instance, "time", time);
         //R_Draw_IB(&va_blade, &ib_blade, &shader_instance);
         R_Draw_IB_Instanced(&va_blade, &ib_blade, &shader_instance, GRASS_AMOUNT);
         GLCall(glDepthMask(GL_TRUE));
