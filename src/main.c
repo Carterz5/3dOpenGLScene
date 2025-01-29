@@ -22,6 +22,7 @@
 #define MAX_ELEMENT_BUFFER 128 * 1024
 
 float randomFloatInRange(float min, float max);
+void processInput(GLFWwindow *window, mat4 *view, float cameraout[3]);
 
 
 
@@ -502,7 +503,7 @@ float positions_blade[] = {
 
 
 
-        processInput(window, view, camera);
+        processInput(window, &view, camera);
 
 
         /* Swap front and back buffers */

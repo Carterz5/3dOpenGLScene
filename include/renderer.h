@@ -1,5 +1,6 @@
 #ifndef RENDERER_H
 #define RENDERER_H
+
 #include <GL/glew.h>
 #include <signal.h>
 #include <stdbool.h>
@@ -11,11 +12,16 @@
 #include "vertexbufferlayout.h"
 #include "texture.h"
 
+#ifdef _WIN32
+    #include <intrin.h>
+    #define ASSERT(x) if (!(x)) __debugbreak();
+#else
+    #define ASSERT(x) if (!(x)) raise(SIGTRAP);
+#endif
 
 
 
 #define TARGET_FPS 60
-#define ASSERT(x) if (!(x)) raise(SIGTRAP);
 #define GLCall(x) GLClearError();\
     x;\
     ASSERT(GLLogCall(#x, __FILE__, __LINE__))
