@@ -1,4 +1,4 @@
-A 3d scene created using C and opengl.
+A 3d scene created using C and opengl. Demonstrates motion of 3d objects, skyboxes, instancing, and billboarding.
 
 ![](https://github.com/Carterz5/3dOpenGLScene/blob/main/demonstration.gif)
 
