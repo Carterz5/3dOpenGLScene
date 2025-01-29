@@ -14,9 +14,9 @@ sudo apt install libglew-dev
 sudo apt install libglfw3
 sudo apt install libglfw3-dev
 sudo apt install libcglm-dev
-git clone https://github.com/Carterz5/Cnake.git
+git clone https://github.com/Carterz5/3dOpenGLScene.git
 
-cd Cnake
+cd 3dOpenGLScene
 make
 
 ```
@@ -32,9 +32,9 @@ pacman -S mingw-w64-ucrt-x86_64-cglm
 pacman -S make
 pacman -S git
 
-git clone https://github.com/Carterz5/Simple-C-Platformer.git
+git clone https://github.com/Carterz5/3dOpenGLScene.git
 
-cd Cnake
+cd 3dOpenGLScene
 
 
 make
