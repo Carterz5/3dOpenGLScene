@@ -1,4 +1,15 @@
+# 3D OpenGL Scene Example
+
 A 3d scene created using C and opengl. Demonstrates motion of 3d objects, skyboxes, instancing, and billboarding.
+
+Features:
+
+- Camera movement using WASD and Mouse
+- Spinning pyramid object
+- Textured skybox using cubemap
+- Billboarded grass to always face camera
+- Instanced grass objects to improve performance
+- Wind simulation to create swaying grass
 
 ![](https://github.com/Carterz5/3dOpenGLScene/blob/main/demonstration.gif)
 
